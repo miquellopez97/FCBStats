@@ -1,7 +1,4 @@
 import React from 'react';
-import teamsData from "../data/Sam/IvfLeague";
-import Team from "./Team";
-// import './League.css';
 import Acumulate from './Acumulate';
 
 const League = (team) => {
