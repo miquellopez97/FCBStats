@@ -1,6 +1,6 @@
 const teams = [
   {
-    id: 194831,
+    id: 61692,
     name: "C.B GRUP BARNA VERMELL",
     teamPhoto:
       "https://d3ah0nqesr6vwc.cloudfront.net/recursos/imatges/multimedia/J3ep8jvfPjFFzvxy.png",
@@ -28,10 +28,6 @@ const teams = [
     name: "BARÇA CBS 1R ANY",
     teamPhoto:
       "https://d3ah0nqesr6vwc.cloudfront.net/recursos/imatges/multimedia/3eTLU093j00yori8.png",
-    games : 
-      [
-        {firts : '650599248d169c02ccced88a'}
-      ]
   },
   {
     id: 5,

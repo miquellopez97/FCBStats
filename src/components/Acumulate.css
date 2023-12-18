@@ -1,0 +1,16 @@
+.contenedor {
+  border: 1px solid #000;
+
+  margin: 20px;
+}
+
+.cabecera {
+  background-color: lightgray;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.contenido {
+  display: none;
+  padding: 10px;
+}

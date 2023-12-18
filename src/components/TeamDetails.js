@@ -1,6 +1,6 @@
 import React from 'react';
 import Acumulate from './Acumulate';
-import teamsData from '../data/Ivf/IvfLeague';
+import teamsData from '../data/Sam/IvfLeague';
 import NormalTeam from './NormalTeam';
 
 const TeamDetails = ({ specificComponentId }) => {
@@ -14,13 +14,11 @@ const TeamDetails = ({ specificComponentId }) => {
 
   const ComponentToRender = isSpecificTeam ? Acumulate : NormalTeam;
 
-  console.log(teamNameFromURL);
-  console.log(teamsData);
-
   return (
     <div>
       {/* Renderiza el componente específico basado en el nombre y ID del equipo */}
-      <ComponentToRender />
+      {/* <ComponentToRender /> */}
+      <Acumulate />
     </div>
   );
 };

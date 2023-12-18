@@ -1,18 +1,17 @@
 import React from 'react';
-import teamsData from "../data/Ivf/IvfLeague";
+import teamsData from "../data/Sam/IvfLeague";
 import Team from "./Team";
-import './League.css';
+// import './League.css';
+import Acumulate from './Acumulate';
 
-const League = () => {
+const League = (team) => {
+  console.log(team);
   return (
-    <div className="league-container">
-      <h1>Infantil femeni 1r any</h1>
-      <div className="teams">
-        {teamsData.map((team) => (
-          <Team key={team.id} teamName={team.name} teamLogo={team.teamPhoto} />
-        ))}
+    <div className="team-container">
+        <h2 className="team-name">{team.team.teamName}</h2>
+        {/* <img className="team-logo" src={team.team.teamPhoto} alt="teamLogo" /> */}
+        <Acumulate team={team.team}/>
       </div>
-    </div>
   );
 };
 

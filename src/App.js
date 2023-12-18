@@ -1,24 +1,18 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import League from './components/League';
-import TeamDetails from './components/TeamDetails';
-import especificId from './data/Ivf/IvfTeam';
+import ivf from './data/Ivf/IvfTeam';
+import AcumulateSAM from './components/AcumulateSAM';
+import League from './components/League.js';
+import sese from './data/Ivf/Sese';
 
-const App = () => {
-  const specificComponentId = especificId.teamId; // Supongamos que queremos mostrar Acumulate para la ID 1
+const App = () => {// Supongamos que queremos mostrar Acumulate para la ID 1
 
   return (
-    <Router>
-      <Routes>
-        <Route exact path="/" element={<League />} />
-        <Route
-          path="/team/:teamName"
-          element={
-            <TeamDetails specificComponentId={specificComponentId}/>
-          }
-        />
-      </Routes>
-    </Router>
+    <div>
+      <h2 className="team-name">SAM</h2>
+      <AcumulateSAM/>
+      <League team={ivf}/>
+      <League team={sese}/>
+    </div>
   );
 };
 
