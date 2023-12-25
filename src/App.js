@@ -1,8 +1,8 @@
 import React from 'react';
-import ivf from './data/Ivf/IvfTeam';
+import ivf from './data/IvfTeam.js';
 import AcumulateSAM from './components/AcumulateSAM';
 import League from './components/League.js';
-import sese from './data/Ivf/Sese';
+import sese from './data/Sese.js';
 
 const App = () => {// Supongamos que queremos mostrar Acumulate para la ID 1
 

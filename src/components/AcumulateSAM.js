@@ -1,6 +1,6 @@
 import React from 'react';
 import SamStats from './SamStats';
-import Sam from '../data/Ivf/SamTeam.js';
+import Sam from '../data/SamTeam.js';
 import './Acumulate.css';
 
 

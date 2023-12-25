@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {useCalcContext} from '../StatsProvider';
+import Map from './Map';
 
 const IvfStats = ({gameID, teamID, teamName}) => {
   const jugadorasEquipo = [];
@@ -18,7 +18,9 @@ const IvfStats = ({gameID, teamID, teamName}) => {
     start: false,
     min:0,
     masMenosMin: 0,
-    MinutosCuartos: ``,
+    minutosCuartos: ``,
+    segundosEntrada: [],
+    segundosSalida: [],
   };
   
   //Constante con todas las jugadas del partido
@@ -59,6 +61,8 @@ const IvfStats = ({gameID, teamID, teamName}) => {
 
     fetchData();
   }, [gameID]);
+
+  //Recorremos el objeto de jugadas para obtener las jugadoras del equipo
   for (const key in data) {
     if (data[key].idTeam === teamID && data[key].actorName !== teamName) {
       const yaAgregada = jugadorasEquipo.some(
@@ -70,6 +74,8 @@ const IvfStats = ({gameID, teamID, teamName}) => {
           number: data[key].actorShirtNumber,
           name: data[key].actorName,
           ...estadisticasIniciales,
+          segundosEntrada: [],
+          segundosSalida: [],
         };
         jugadorasEquipo.push(jugador);
       }
@@ -150,6 +156,7 @@ const IvfStats = ({gameID, teamID, teamName}) => {
           );
           if (jugadora) {
             jugadora.start = true;
+            jugadora.segundosEntrada.push(0);
             jugadorasTitulares.add(evento.actorName);
           }
         }
@@ -164,6 +171,14 @@ const IvfStats = ({gameID, teamID, teamName}) => {
   };
   marcarTitular();
 
+  function tiempoASegundos(cuarto, minutos, segundos) {
+    // Verificar si el cuarto es prorroga
+    const duracionCuarto = cuarto > 4 ? 5 : 10;
+
+    // Reflejar el tiempo transcurrido en el partido en segundos
+    return ((cuarto - 1) * 600) + (duracionCuarto - minutos) * 60 - segundos; 
+  }
+
   const enterOnCourt = (evento) => {
     const jugadora = jugadorasEquipo.find(
       (jugadora) => jugadora.name === evento.actorName
@@ -173,22 +188,32 @@ const IvfStats = ({gameID, teamID, teamName}) => {
     if (jugadora) {
       if (!jugadora.onCourt) {
         jugadora.onCourt = true;
-        jugadora.MinutosCuartos += `[ (P${evento.period}) ${evento.min}:${evento.sec}-`;
+        jugadora.minutosCuartos += `[ (P${evento.period}) ${evento.min}:${evento.sec}-`;
+
+        var nuevoSegundo = tiempoASegundos(evento.period, evento.min, evento.sec);
+        if (!jugadora.segundosEntrada.includes(nuevoSegundo)) {
+          jugadora.segundosEntrada.push(nuevoSegundo);
+        }
       }
     }else {}
   };
 
-    const outOnCourt = (evento) => {
-      const jugadora = jugadorasEquipo.find(
-        (jugadora) => jugadora.name === evento.actorName
-      );
-    
-        // Marcar a la jugadora como en la cancha y actualizar el tiempo de entrada
-      if (jugadora) {
-        jugadora.onCourt = false;
-        jugadora.MinutosCuartos += `(P${evento.period}) ${evento.min}:${evento.sec}] - `;
-      }else {}
-      };
+  const outOnCourt = (evento) => {
+    const jugadora = jugadorasEquipo.find(
+      (jugadora) => jugadora.name === evento.actorName
+    );
+  
+      // Marcar a la jugadora como en la cancha y actualizar el tiempo de entrada
+    if (jugadora) {
+      jugadora.onCourt = false;
+      jugadora.minutosCuartos += `(P${evento.period}) ${evento.min}:${evento.sec}] - `;
+
+      var nuevoSegundo = tiempoASegundos(evento.period, evento.min, evento.sec);
+      if (!jugadora.segundosSalida.includes(nuevoSegundo)) {
+        jugadora.segundosSalida.push(nuevoSegundo);
+      }
+    }else {}
+    };
 
   //Repasamos las jugadas para acumular las estadísticas
   for (const evento of eventosArray) {
@@ -216,6 +241,7 @@ const IvfStats = ({gameID, teamID, teamName}) => {
     }
   }
 
+  //Asignar el tiempo de juego a cada jugadora
   jugadorasEquipo.forEach(jugadora => {
     try {
       const matchingPlayer = desiredTeam.players.find(player => player.name === jugadora.name);
@@ -230,37 +256,41 @@ const IvfStats = ({gameID, teamID, teamName}) => {
     }
   });
 
+  //Eliminamos el jugador con nombre del equipo
   jugadorasEquipo.unshift({gameID : gameID});
 
   //Ordenamos el array por número de camiseta
   const jugadorasStats = jugadorasEquipo.sort((a, b) => parseInt(a.number) - parseInt(b.number));
-
-  useCalcContext(jugadorasStats);
   
+  //Ponemos los minutos de los cuartos en el formato correcto
   jugadorasEquipo.forEach(element => {
-    if (element.MinutosCuartos) {
+    if (element.minutosCuartos) {
       // Verificar si el valor comienza con "undefined"
-      if (element.MinutosCuartos.startsWith('undefined')) {
+      if (element.minutosCuartos.startsWith('undefined')) {
         // Eliminar la parte "undefined" de la cadena
-        element.MinutosCuartos = element.MinutosCuartos.slice('undefined'.length);
+        element.minutosCuartos = element.minutosCuartos.slice('undefined'.length);
       }
 
-      if (/\d-$/.test(element.MinutosCuartos)) {
+      if (/\d-$/.test(element.minutosCuartos)) {
         // Agregar al final el valor (P4) 10:0]
-        element.MinutosCuartos = `${element.MinutosCuartos}(P4) 00:00]`;
+        element.minutosCuartos = `${element.minutosCuartos}(P4) 00:00]`;
+        element.segundosSalida.push(2400);
       }
   
       // Verificar si el valor no comienza con "P"
-      if (!element.MinutosCuartos.startsWith('[')) {
+      if (!element.minutosCuartos.startsWith('[')) {
         // Agregar al principio el valor P1[10:0]
-        element.MinutosCuartos = `[ (P1) 10:0-${element.MinutosCuartos}`;
+        element.minutosCuartos = `[ (P1) 10:0-${element.minutosCuartos}`;
       }
 
-      element.MinutosCuartos = element.MinutosCuartos.replace(/-\s*$/, '');
+      element.minutosCuartos = element.minutosCuartos.replace(/-\s*$/, '');
     }
   });
+
+  //Filtramos solo jugadores reales
   const jugadorasFiltradas = jugadorasStats.filter((jugadora) => jugadora.number && jugadora.number.trim() !== '');
 
+  console.log(jugadorasFiltradas);
 
   return (
     <div className="container my-5">
@@ -297,13 +327,16 @@ const IvfStats = ({gameID, teamID, teamName}) => {
                 </tr>
                 <tr>
                 <td colSpan="10" style={{ textAlign: 'center' }}>          
-                  {jugadora.MinutosCuartos}
+                  {jugadora.minutosCuartos}
                 </td>
                 </tr>
               </React.Fragment>
             ))}
           </tbody>
         </table>
+      </div>
+      <div>
+        <Map jugadoras={jugadorasFiltradas}/>
       </div>
     </div>
   );
