@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Map from './Map';
+import SecondMap from './SecondMap';
 
 const IvfStats = ({gameID, teamID, teamName}) => {
   const jugadorasEquipo = [];
@@ -20,7 +20,7 @@ const IvfStats = ({gameID, teamID, teamName}) => {
     masMenosMin: 0,
     minutosCuartos: ``,
     segundosEntrada: [],
-    segundosSalida: [],
+    segundosSalida: []
   };
   
   //Constante con todas las jugadas del partido
@@ -75,7 +75,7 @@ const IvfStats = ({gameID, teamID, teamName}) => {
           name: data[key].actorName,
           ...estadisticasIniciales,
           segundosEntrada: [],
-          segundosSalida: [],
+          segundosSalida: []
         };
         jugadorasEquipo.push(jugador);
       }
@@ -290,8 +290,6 @@ const IvfStats = ({gameID, teamID, teamName}) => {
   //Filtramos solo jugadores reales
   const jugadorasFiltradas = jugadorasStats.filter((jugadora) => jugadora.number && jugadora.number.trim() !== '');
 
-  console.log(jugadorasFiltradas);
-
   return (
     <div className="container my-5">
       <div className="row justify-content-center">
@@ -336,7 +334,8 @@ const IvfStats = ({gameID, teamID, teamName}) => {
         </table>
       </div>
       <div>
-        <Map jugadoras={jugadorasFiltradas}/>
+        {/* <Map jugadoras={jugadorasFiltradas}/> */}
+        <SecondMap jugadoras={jugadorasFiltradas}/>
       </div>
     </div>
   );
